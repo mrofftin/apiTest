@@ -41,36 +41,39 @@
 <div class="container">
     <a href="/apiTest">서비스</a>
 
+    <p th:text="'total 건수 : '+ ${totalCount}"></p>
     <table class="table">
         <thead>
-        <th>테마</th>
-        <th>코스명</th>
-        <th>코스지역</th>
-        <th>관광지점</th>
-        <th>관광지명</th>
-        <th>풍속</th>
-        <th>하늘상태</th>
-        <th>습도</th>
-        <th>강수확률</th>
+            <th>테마</th>
+            <th>코스명</th>
+            <th>코스지역</th>
+            <th>관광지점</th>
+            <th>관광지명</th>
+            <th>풍속</th>
+            <th>하늘상태</th>
+            <th>습도</th>
+            <th>강수확률</th>
         </thead>
-        <tr th:each="tourInfo : ${tourInfos}">
-            <td th:text="${tourInfo.getThema()}"></td>
-            <td th:text="${tourInfo.getCourseName()}"></td>
-            <td th:text="${tourInfo.getCourseAreaName()}"></td>
-            <td th:text="${tourInfo.getSpotAreaName()}"></td>
-            <td th:text="${tourInfo.getSpotName()}"></td>
-            <td th:text="${tourInfo.getWs()}"></td>
-            <td th:if="${tourInfo.getSky() == 1}" th:text="맑음"></td>
-            <td th:if="${tourInfo.getSky() == 2}" th:text="구름"></td>
-            <td th:if="${tourInfo.getSky() == 3}" th:text="흐림"></td>
-            <td th:if="${tourInfo.getSky() == 4}" th:text="비"></td>
-            <td th:if="${tourInfo.getSky() == 5}" th:text="소나기"></td>
-            <td th:if="${tourInfo.getSky() == 6}" th:text="비눈"></td>
-            <td th:if="${tourInfo.getSky() == 7}" th:text="눈비"></td>
-            <td th:if="${tourInfo.getSky() == 8}" th:text="눈"></td>
-            <td th:text="${tourInfo.getRhm()}"></td>
-            <td th:text="${tourInfo.getPop()+'%'}"></td>
-        </tr>
+        <tbody>
+            <tr th:each="tourInfo : ${tourInfos}">
+                <td th:text="${tourInfo.getThema()}"></td>
+                <td th:text="${tourInfo.getCourseName()}"></td>
+                <td th:text="${tourInfo.getCourseAreaName()}"></td>
+                <td th:text="${tourInfo.getSpotAreaName()}"></td>
+                <td th:text="${tourInfo.getSpotName()}"></td>
+                <td th:text="${tourInfo.getWs()}"></td>
+                <td th:if="${tourInfo.getSky() == 1}" th:text="맑음"></td>
+                <td th:if="${tourInfo.getSky() == 2}" th:text="구름"></td>
+                <td th:if="${tourInfo.getSky() == 3}" th:text="흐림"></td>
+                <td th:if="${tourInfo.getSky() == 4}" th:text="비"></td>
+                <td th:if="${tourInfo.getSky() == 5}" th:text="소나기"></td>
+                <td th:if="${tourInfo.getSky() == 6}" th:text="비눈"></td>
+                <td th:if="${tourInfo.getSky() == 7}" th:text="눈비"></td>
+                <td th:if="${tourInfo.getSky() == 8}" th:text="눈"></td>
+                <td th:text="${tourInfo.getRhm()}"></td>
+                <td th:text="${tourInfo.getPop()+'%'}"></td>
+            </tr>
+        </tbody>
     </table>
 <!--    <nav aria-label="Page navigation example">-->
 <!--        <ul class="pagination">-->
@@ -82,30 +85,32 @@
 <!--        </ul>-->
 <!--    </nav>-->
 
-
-
-    <div th:with="start=${(pageNo/maxPage)*maxPage + 1}, end=(${( totalCount == 0) ? 1 : (start + (maxPage - 1) < totalPage ? start + (maxPage - 1) : totalPage)})" >
         <ul class="pagination justify-content-center">
-
-            <li class="page-item" th:classappend="${tourInfos}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${pageNo - 1} + ')'" aria-label='Previous' class="page-link">
-                    <span aria-hidden='true'>Previous</span>
-                </a>
+            <li class="page-item" th:classappend="${prevPage <=0}?'disabled' : ''">
+                <a class="page-link" th:href="@{/apiTest(pageNo = ${prevPage})}">이전</a>
             </li>
 
-            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${pageNo eq page-1}?'active':''">
-                <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+            <li class="page-item" th:each="page: ${#numbers.sequence(blockStart, blockEnd)}" th:classappend="${pageNo eq page}?'active':''">
+                <a class="page-link" th:href="@{/apiTest(pageNo = ${page})}" th:text="${page}"></a>
             </li>
 
-            <li class="page-item" th:classappend="${tourInfos.last}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${pageNo + 1} + ')'" aria-label='Next' class="page-link">
-                    <span aria-hidden='true'>Next</span>
-                </a>
+            <li class="page-item" th:classappend="${blockEnd >= totalPages}?'disabled':''">
+                <a class="page-link" th:href="@{/apiTest(pageNo = ${nextPage})}">다음</a>
             </li>
-
         </ul>
-    </div>
+<script>
+    /************* paging *****************/
+    // var actionForm = $("#actionForm");
 
+    $(".page-item a").on("click", function(e){
+    e.preventDefault();
+
+    /* $(this).attr("href") --> <a>태그의 href값을 의미 */
+    actionForm.find("input[name='viewPage']").val($(this).attr("href"));
+    actionForm.submit();
+    });
+
+</script>
 
 </div>
 </body>

@@ -22,6 +22,7 @@ public class ApiTest {
 
     @GetMapping("/apiTest")
     public String apiTest(@RequestParam(value = "pageNo", required = false, defaultValue = "1") String pageNo, Model model) throws IOException{
+        System.out.println("start");
         String date = "2022011010";
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/TourStnInfoService/getTourStnVilageFcst"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=NgM4AEfqR5lvPHpMnDdOqa1EgpcRUSBeiKmvLmo3RyleWNOBGKNWS%2FNPLpkP12MlI6GGER6keJzILgL2dnuUuQ%3D%3D"); /*Service Key*/
@@ -68,7 +69,8 @@ public class ApiTest {
         String numOfRows = bodyObj.get("numOfRows").toString();
         int intNumOfRows = Integer.parseInt(numOfRows);
 
-        int totalPage = (int) Math.ceil(intTotalCount * 1.0 / intNumOfRows);
+        // 전체 페이지수
+        int totalPages = (int) Math.ceil(intTotalCount * 1.0 / intNumOfRows);
 
 
 //        System.out.println("totalCount : " + totalCount);
@@ -101,11 +103,31 @@ public class ApiTest {
 //            System.out.println(tInfo.getCourseName());
 //            System.out.println(tInfo.getThema());
 //        }
+        int blockSize = 5;
         int intPageNo = Integer.parseInt(pageNo);
+
+
+        // 현재 페이지의 블럭 위치
+        int blockNum = (intPageNo - 1)/blockSize;
+
+        // 블럭의 시작값 : 1, 6, 11 ... ...
+        int blockStart = (blockSize*blockNum)+1;
+        // 블럭의 마지막 값 : 5, 10, 15, 20,...
+        int blockEnd = blockStart + (blockSize - 1);
+        if(blockEnd > totalPages) blockEnd = totalPages;
+
+        int prevPage = blockStart - 1;
+        int nextPage = blockEnd + 1;
+        if (nextPage > totalPages) nextPage = totalPages;
+
         model.addAttribute("pageNo", intPageNo);
-        model.addAttribute("maxPage", 5);
+        model.addAttribute("prevPage", prevPage);
+        model.addAttribute("nextPage", nextPage);
+        model.addAttribute("blockStart", blockStart);
+        model.addAttribute("blockEnd", blockEnd);
+
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("tourInfos", tourInfos);
 
 
