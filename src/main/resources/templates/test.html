@@ -38,10 +38,29 @@
     </th:block>
 </head>
 <body>
+<!--타임리프에서 스프링의 Enum 클래스에 접근하기 위해서는 T() 문법을 이용하여 Enum 클래스의 "fully qualified name" 을 감싸면 됨
+    전체값을 가져올 때는 values()를 이용
+-->
 <div class="container">
     <a href="/apiTest">서비스</a>
+    <form id="themaSel" th:action th:object="${themaType}" >
+        <div class="form-group col-md-3">
+            <label for="thema">여행 테마 선택</label>
+            <!-- th:field는 id, name, value 값을 자동으로 만들어준다.-->
+            <select class="form-control" id="thema" th:field="*{thema}">
+                <option value="">테마 선택</option>
+                <option th:each="thema : ${T(co.mr.apiTest.model.Thema).values()}"
+                        th:value="${thema.getValue()}"
+                        th:text="${thema.getValue()}">테마</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">확인</button>
+    </form>
 
-    <p th:text="'total 건수 : '+ ${totalCount}"></p>
+    <div class="container d-flex">
+    <span class="mr-auto" th:text="'total 건수 : '+ ${totalCount}"></span>
+    <span th:text="'기준 일자 : '+ ${tourInfos[0].getTm()}"></span>
+    </div>
     <table class="table">
         <thead>
             <th>테마</th>
@@ -55,24 +74,29 @@
             <th>강수확률</th>
         </thead>
         <tbody>
-            <tr th:each="tourInfo : ${tourInfos}">
-                <td th:text="${tourInfo.getThema()}"></td>
-                <td th:text="${tourInfo.getCourseName()}"></td>
-                <td th:text="${tourInfo.getCourseAreaName()}"></td>
-                <td th:text="${tourInfo.getSpotAreaName()}"></td>
-                <td th:text="${tourInfo.getSpotName()}"></td>
-                <td th:text="${tourInfo.getWs()}"></td>
-                <td th:if="${tourInfo.getSky() == 1}" th:text="맑음"></td>
-                <td th:if="${tourInfo.getSky() == 2}" th:text="구름"></td>
-                <td th:if="${tourInfo.getSky() == 3}" th:text="흐림"></td>
-                <td th:if="${tourInfo.getSky() == 4}" th:text="비"></td>
-                <td th:if="${tourInfo.getSky() == 5}" th:text="소나기"></td>
-                <td th:if="${tourInfo.getSky() == 6}" th:text="비눈"></td>
-                <td th:if="${tourInfo.getSky() == 7}" th:text="눈비"></td>
-                <td th:if="${tourInfo.getSky() == 8}" th:text="눈"></td>
-                <td th:text="${tourInfo.getRhm()}"></td>
-                <td th:text="${tourInfo.getPop()+'%'}"></td>
-            </tr>
+
+            <th:block th:with="thema=${themaValue}" th:each="tourInfo : ${tourInfos}">
+<!--            <tr th:each="tourInfo : ${tourInfos}">-->
+<!--                <tr th:if="${tourInfo.getThema() == ${thema}}">-->
+                <tr th:if="${tourInfo.getThema() == '종교/역사/전통'}">
+                    <td th:text="${tourInfo.getThema()}"></td>
+                    <td th:text="${tourInfo.getCourseName()}"></td>
+                    <td th:text="${tourInfo.getCourseAreaName()}"></td>
+                    <td th:text="${tourInfo.getSpotAreaName()}"></td>
+                    <td th:text="${tourInfo.getSpotName()}"></td>
+                    <td th:text="${tourInfo.getWs()}"></td>
+                    <td th:if="${tourInfo.getSky() == 1}" th:text="맑음"></td>
+                    <td th:if="${tourInfo.getSky() == 2}" th:text="구름"></td>
+                    <td th:if="${tourInfo.getSky() == 3}" th:text="흐림"></td>
+                    <td th:if="${tourInfo.getSky() == 4}" th:text="비"></td>
+                    <td th:if="${tourInfo.getSky() == 5}" th:text="소나기"></td>
+                    <td th:if="${tourInfo.getSky() == 6}" th:text="비눈"></td>
+                    <td th:if="${tourInfo.getSky() == 7}" th:text="눈비"></td>
+                    <td th:if="${tourInfo.getSky() == 8}" th:text="눈"></td>
+                    <td th:text="${tourInfo.getRhm()}"></td>
+                    <td th:text="${tourInfo.getPop()+'%'}"></td>
+                </tr>
+            </th:block>
         </tbody>
     </table>
 <!--    <nav aria-label="Page navigation example">-->
