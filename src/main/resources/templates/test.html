@@ -33,7 +33,6 @@
                     + "&searchBy=" + searchBy
                     + "&searchQuery=" + searchQuery;
             }
-
         </script>
     </th:block>
 </head>
@@ -43,23 +42,24 @@
 -->
 <div class="container">
     <a href="/apiTest">서비스</a>
-    <form id="themaSel" th:action th:object="${themaType}" >
+    <form id="themaSel" th:action="@{/apiTest}" th:object="${thema}">
         <div class="form-group col-md-3">
-            <label for="thema">여행 테마 선택</label>
+            <label for="themaType">여행 테마 선택</label>
             <!-- th:field는 id, name, value 값을 자동으로 만들어준다.-->
-            <select class="form-control" id="thema" th:field="*{thema}">
+            <select class="form-control" id="themaType" th:field="*{themaType}">
                 <option value="">테마 선택</option>
-                <option th:each="thema : ${T(co.mr.apiTest.model.Thema).values()}"
-                        th:value="${thema.getValue()}"
-                        th:text="${thema.getValue()}">테마</option>
+                <option th:each="type : ${themaTypes}"
+                        th:value="${type.getValue()}"
+                        th:text="${type.getValue()}">테마</option>
             </select>
         </div>
         <button class="btn btn-primary" type="submit">확인</button>
+
     </form>
 
     <div class="container d-flex">
-    <span class="mr-auto" th:text="'total 건수 : '+ ${totalCount}"></span>
-    <span th:text="'기준 일자 : '+ ${tourInfos[0].getTm()}"></span>
+        <span class="mr-auto" th:text="'total 건수 : '+ ${totalCount}"></span>
+        <span th:text="'기준 일시 : '+ ${tourInfos[0].getTm()}"></span>
     </div>
     <table class="table">
         <thead>
@@ -74,11 +74,15 @@
             <th>강수확률</th>
         </thead>
         <tbody>
+<!--        <span th:text="${themaValue}"></span>-->
 
-            <th:block th:with="thema=${themaValue}" th:each="tourInfo : ${tourInfos}">
+<span th:text="${themaType}"></span>
+            <th:block th:each="tourInfo : ${tourInfos}">
 <!--            <tr th:each="tourInfo : ${tourInfos}">-->
-<!--                <tr th:if="${tourInfo.getThema() == ${thema}}">-->
-                <tr th:if="${tourInfo.getThema() == '종교/역사/전통'}">
+<!--                <span th:text="${tourInfo.getThema()}"></span>-->
+<!--                <span th:text="${tourInfo.getThema().equals(themaType)}"></span>-->
+<!--                <tr th:if="${tourInfo.getThema() == '종교/역사/전통'}">-->
+                <tr th:if="${tourInfo.getThema().equals(themaType)}">
                     <td th:text="${tourInfo.getThema()}"></td>
                     <td th:text="${tourInfo.getCourseName()}"></td>
                     <td th:text="${tourInfo.getCourseAreaName()}"></td>
@@ -125,7 +129,6 @@
 <script>
     /************* paging *****************/
     // var actionForm = $("#actionForm");
-
     $(".page-item a").on("click", function(e){
     e.preventDefault();
 
@@ -133,9 +136,9 @@
     actionForm.find("input[name='viewPage']").val($(this).attr("href"));
     actionForm.submit();
     });
-
 </script>
 
 </div>
 </body>
 </html>
+

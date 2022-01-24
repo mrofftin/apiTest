@@ -1,5 +1,6 @@
 package co.mr.apiTest.controller;
 
+import co.mr.apiTest.model.Thema;
 import co.mr.apiTest.model.ThemaType;
 import co.mr.apiTest.model.TourInfo;
 import co.mr.apiTest.service.GetTourInfoService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
@@ -20,12 +22,17 @@ public class ApiTest {
     @Autowired
     private GetTourInfoService infoService;
 
+    @ModelAttribute("themaTypes")
+    public ThemaType[] themaTypes() {
+        return ThemaType.values();
+    }
+
     @GetMapping("/apiTest")
     public String apiTest(@RequestParam(value = "pageNo", required = false, defaultValue = "1") String pageNo,
-                          @RequestParam(value = "thema", required = false, defaultValue = "") String thema,
+                          String themaType,
                           Model model) throws IOException{
 
-        String jsonData = infoService.getTourInfo(pageNo) ;
+        String jsonData = infoService.getTourInfo(pageNo);
 
         // 필요데이터만을 처리하기 위한 파싱 작업
         JsonElement jsonElement = JsonParser.parseString(jsonData);
@@ -84,13 +91,10 @@ public class ApiTest {
         int nextPage = blockEnd + 1;
         if (nextPage > totalPages) nextPage = totalPages;
 
-        thema = "종교/역사/전통";
+//        thema = "종교/역사/전통";
 
-        System.out.println("themaValue : " + thema);
-
-        model.addAttribute("themaType", new ThemaType());
-
-        model.addAttribute("themaValue", thema);
+        model.addAttribute("thema", new Thema());
+        model.addAttribute("themaType", themaType);
         model.addAttribute("pageNo", intPageNo);
         model.addAttribute("prevPage", prevPage);
         model.addAttribute("nextPage", nextPage);
